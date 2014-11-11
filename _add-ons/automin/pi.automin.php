@@ -86,7 +86,7 @@ class Plugin_automin extends Plugin {
 
     // Output cache file, if valid
     if (FALSE !== $cache_filename) {
-      $this->_write_log("Cache found and valid");
+      $this->log->info("Cache found and valid");
       return $this->_format_output($cache_filename, $last_modified, $markup_type);
     }
 
@@ -99,7 +99,7 @@ class Plugin_automin extends Plugin {
 
     // If we couldn't read some files, return original tags
     if (FALSE === $combined_file_data) {
-      $this->_write_log("ERROR: One or more of your files couldn't be read.");
+      $this->log->error("ERROR: One or more of your files couldn't be read.");
       return $markup;
     }
 
@@ -122,11 +122,11 @@ class Plugin_automin extends Plugin {
       $data_savings_kb,
       $data_savings_percent
     );
-    $this->_write_log($data_savings_message);
+    $this->log->info($data_savings_message);
 
     // If compilation fails, return original tags
     if (FALSE === $combined_file_data) {
-      $this->_write_log("ERROR: Compilation failed. Perhaps you have a syntax error?");
+      $this->log->error("ERROR: Compilation failed. Perhaps you have a syntax error?");
       return $markup;
     }
 
@@ -135,7 +135,7 @@ class Plugin_automin extends Plugin {
 
     // If caching failed, return original tags
     if (FALSE === $cache_result) {
-      $this->_write_log("ERROR: Caching is disabled or we were unable to write to your cache directory.");
+      $this->log->error("ERROR: Caching is disabled or we were unable to write to your cache directory.");
       return $markup;
     }
 
@@ -197,8 +197,8 @@ class Plugin_automin extends Plugin {
       }
 
     } catch (Exception $e) {
+      $this->log->fatal('Compilation Exception: ' . $e->getMessage());
       exit($e->getMessage());
-      $this->_write_log('Compilation Exception: ' . $e->getMessage());
       return FALSE;
 
     }
@@ -484,15 +484,5 @@ class Plugin_automin extends Plugin {
   */
   private function remove_double_slashes($str) {
     return preg_replace("#([^/:])/+#", "\\1/", $str);
-  }
-
-  /**
-   * Writes the message to the template log
-   * @param string $message
-   * @return void
-   * @author Jesse Bunch
-  */
-  private function _write_log($message) {
-    //$this->EE->TMPL->log_item("AutoMin Module: $message");
   }
 }
